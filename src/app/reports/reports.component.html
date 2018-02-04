@@ -1,0 +1,79 @@
+<app-header></app-header>
+
+<p>&nbsp;</p>
+
+<div class="row">
+  <div class="col-3">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Generated reports</h4>
+        <div class="list-group" *ngFor="let reportname of reportnames; index as i">
+          <a (click)="selectReport(i)" class="list-group-item">
+            {{reportname}}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-9" *ngIf="clients.length > 0">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-2 col-sm-3" >
+            <p>Ping status</p>
+            <div style="display: block">
+              <canvas mdbChart 
+                [chartType]="chartType"
+                [data]="chartDataPing"
+                [labels]="chartLabelsPing"
+                [colors]="chartColors"
+                [options]="chartOptions"
+                [legend]="false"
+                (chartClick)="pingChartClicked($event)">
+              </canvas>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-3" >
+            <p>SSH status</p>
+            <div style="display: block">
+              <canvas mdbChart 
+                [chartType]="chartType"
+                [data]="chartDataSSH"
+                [labels]="chartLabelsSSH"
+                [colors]="chartColors"
+                [options]="chartOptions"
+                [legend]="false"
+                (chartClick)="sshChartClicked($event)">
+              </canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="card">
+      <div class="card-body">
+        <table class="table table-stripped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>IP</th>
+              <th>FQDN</th>
+              <th>Online</th>
+              <th>SSH accessible</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let client of clients; index as i">
+            <tr>
+              <th>{{client.clientname}}</th>
+              <td>{{client.dns.ip}}</td>
+              <td>{{client.dns.fqdn}}</td>
+              <td>{{client.state.online}}</td>
+              <td>{{client.state.ssh_accessible}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

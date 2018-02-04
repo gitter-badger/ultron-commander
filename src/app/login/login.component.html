@@ -1,0 +1,35 @@
+<p>&nbsp;</p><p>&nbsp;</p>
+
+<div class="row">
+  <div class="col-4">&nbsp;</div>
+  <div class="col-4">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Connect to Ultron API</h4>
+        <form (submit)="login($event)">
+          <div class="md-form">
+            <input [(ngModel)]="apiurl" name="apiurl" type="text" class="form-control" mdbActive value="{{apiurl}}">
+            <label for="apiurl">API endpoint</label>
+          </div>
+
+          <div class="md-form">
+            <i class="fa fa-user prefix grey-text"></i>
+            <input [(ngModel)]="username" name="username" type="text" class="form-control" mdbActive>
+            <label for="username">Username</label>
+          </div>
+
+          <div class="md-form">
+            <i class="fa fa-lock prefix grey-text"></i>
+            <input [(ngModel)]="password" name="password" type="password" class="form-control" mdbActive>
+            <label for="password">Password</label>
+          </div>
+
+          <div class="text-center">
+            <button class="btn btn-block btn-default waves-light" mdbRippleRadius>Connect</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-4">&nbsp;</div>
+</div>

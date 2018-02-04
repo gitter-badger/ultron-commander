@@ -1,0 +1,22 @@
+<mdb-navbar SideClass="navbar navbar-expand-lg navbar-dark bg-default" [containerInside]="false">
+  <logo>
+    <a class="logo navbar-brand" href="/">
+      <strong>Ultron Commander</strong>
+    </a>
+  </logo>
+  <links>
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item waves-light" mdbRippleRadius>
+        <a class="nav-link" (click)="this.router.navigate([''])">new</a>
+      </li>
+      <li class="nav-item waves-light" mdbRippleRadius>
+        <a class="nav-link" (click)="this.router.navigate(['/reports'])">reports</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav pull-right">
+      <li class="nav-item waves-light" mdbRippleRadius>
+        <a class="nav-link" (click)="this.router.navigate(['/login'])">Log out</a>
+      </li>
+    </ul>
+  </links>
+</mdb-navbar>
