@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { FormsModule } from '@angular/forms'
+import { AuthGuard } from './auth.guard'
 
 
 import { AppComponent } from './app.component';
@@ -32,11 +33,13 @@ import { LoginComponent } from './login/login.component';
       },
       {
         path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardComponent,
+        canActivate: [AuthGuard] 
       },
       {
         path: 'reports',
-        component: ReportsComponent
+        component: ReportsComponent,
+        canActivate: [AuthGuard] 
       },
       {
         path: 'login',
@@ -44,7 +47,7 @@ import { LoginComponent } from './login/login.component';
       }
     ])
   ],
-  providers: [],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

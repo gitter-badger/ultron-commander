@@ -1,21 +1,22 @@
 <app-header></app-header>
 
-<p>&nbsp;</p>
-
 <div class="row">
-  <div class="col-3">
+  <div class="col-md-3">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Generated reports</h4>
-        <div class="list-group" *ngFor="let reportname of reportnames; index as i">
-          <a (click)="selectReport(i)" class="list-group-item">
+        <div class="list-group">
+          <a (click)="selectReport(reportname)" class="list-group-item" *ngFor="let reportname of reportnames">
             {{reportname}}
+            <button (click)="deleteReport(reportname, $event)" class="btn btn-sm btn-danger pull-right">
+              <i class="fa fa-trash"></i>
+            </button>
           </a>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-9" *ngIf="clients.length > 0">
+  <div class="col-md-9" *ngIf="clients.length > 0">
     <div class="card">
       <div class="card-body">
         <div class="row">
@@ -47,6 +48,12 @@
               </canvas>
             </div>
           </div>
+          <div class="col-md-2 col-sm-3">
+            <button (click)="perform('ping')" class="btn btn-sm btn-block btn-default">PING</button>
+            <button (click)="perform('ssh')" class="btn btn-sm btn-block btn-default">SSH</button>
+            <button (click)="perform('shell')" class="btn btn-sm btn-block btn-default">SHELL</button>
+          </div>
+          <div *ngIf="taskPending" class="col-md-2 col-sm-3">{{done.length}}/{{clients.length}}</div>
         </div>
       </div>
     </div>
@@ -63,11 +70,11 @@
               <th>SSH accessible</th>
             </tr>
           </thead>
-          <tbody *ngFor="let client of clients; index as i">
+          <tbody *ngFor="let client of clients">
             <tr>
               <th>{{client.clientname}}</th>
-              <td>{{client.dns.ip}}</td>
-              <td>{{client.dns.fqdn}}</td>
+              <td>{{client.dns ? client.dns.ip : 'n/a'}}</td>
+              <td>{{client.dns ? client.dns.fqdn : 'n/a'}}</td>
               <td>{{client.state.online}}</td>
               <td>{{client.state.ssh_accessible}}</td>
             </tr>

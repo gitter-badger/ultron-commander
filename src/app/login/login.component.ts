@@ -12,6 +12,7 @@ export class LoginComponent implements OnInit {
   public username: string
   public password: string
   public apiurl: string
+  public error: string
 
   constructor(private router: Router) { }
 
@@ -22,6 +23,7 @@ export class LoginComponent implements OnInit {
 
   login(e) {
     e.preventDefault()
+    this.error = ''
     axios.get(`${this.apiurl}/token/${this.username}`, {
       auth: {username: this.username, password: this.password}
     })
@@ -35,6 +37,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate([''])
     })
     .catch(err => {
+      this.error = 'Authentication faled !'
       console.error(err);
       localStorage.removeItem('session')
     })

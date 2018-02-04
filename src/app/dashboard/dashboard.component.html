@@ -1,1 +1,39 @@
 <app-header></app-header>
+
+<div class="row">
+  <div class="col-md-3 col-sm-1"></div>
+  <div class="col-md-6 col-sm-10">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Generate new report</h4>
+        <p>&nbsp;</p>
+        <form (submit)="generateReport($event)">
+
+          <div class="md-form">
+            <input [(ngModel)]="reportname" name="reportname" type="text" class="form-control" mdbActive>
+            <label for="reportname">Title</label>
+          </div>
+
+          <div class="md-form">
+            <textarea [(ngModel)]="clientnames" name="clientnames" class="md-textarea" mdbActive></textarea>
+            <label for="form7">Hostnames</label>
+          </div>
+
+          <div class="md-form">
+            <textarea [(ngModel)]="props" name="props" class="md-textarea" mdbActive></textarea>
+            <label>Extra properties (JSON)</label>
+          </div>
+
+          <div class="text-center">
+            <button class="btn btn-default waves-light" mdbRippleRadius>Submit</button>
+          </div>
+          
+          <p>&nbsp;</p>
+          <p class="text-center text-danger">{{error}}</p>
+        
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-1"></div>
+</div>

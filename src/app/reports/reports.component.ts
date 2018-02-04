@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import axios from 'axios'
 import { Router } from '@angular/router'
-import { logging } from 'selenium-webdriver';
-import { filter } from 'rxjs/operator/filter';
 
 @Component({
   selector: 'app-reports',
@@ -13,8 +11,6 @@ export class ReportsComponent implements OnInit {
 
   public reportnames: any = []
   public clients: any = []
-  public selectedReport: number = -1
-  public selectedClient: number = -1
 
   public chartType: string = 'pie';
   public chartDataPing: Array<any> = [0, 0, 0];
@@ -33,6 +29,9 @@ export class ReportsComponent implements OnInit {
   private apiurl: string
   private router: Router
   private allClients: any
+  private selectedReport: string
+  private done: any
+  private taskPending: boolean = false
 
   constructor() {
     this.s = JSON.parse(localStorage.getItem('session'))
@@ -40,9 +39,6 @@ export class ReportsComponent implements OnInit {
    }
 
   ngOnInit() {
-    if ( ! this.s ) {
-      this.router.navigate(['/login'])
-    }
 
     axios.get(`${this.apiurl}/admin/${this.s.username}`, {
       auth: {username: this.s.username, password: this.s.password}
@@ -87,20 +83,21 @@ export class ReportsComponent implements OnInit {
     return Object.values(obj)
   }
 
-  selectReport(number) {
-    this.selectedReport = number
-    let reportname = this.reportnames[number]
+  selectReport(reportname) {
     axios.get(`${this.apiurl}/reports/${this.s.username}/${reportname}`, {
       auth: { username: this.s.username, password: this.s.password }
     })
       .then(res => {
+        this.selectedReport = reportname
         this.clients = this.allClients = res.data.results
+        this.chartDataPing = [0, 0, 0]
+        this.chartDataSSH = [0, 0, 0]
         this.clients.map(client => {
           if (client.state.online === true) {
             this.chartDataPing[0] += 1
           } else if (client.state.online === false) {
             this.chartDataPing[1] += 1
-          } else if (client.state === undefined) {
+          } else if (client.state.online === undefined) {
             this.chartDataPing[2] += 1
           }
 
@@ -108,7 +105,7 @@ export class ReportsComponent implements OnInit {
             this.chartDataSSH[0] += 1
           } else if (client.state.ssh_accessible === false) {
             this.chartDataSSH[1] += 1
-          } else if (client.ssh_accessible === undefined) {
+          } else if (client.state.ssh_accessible === undefined) {
             this.chartDataSSH[2] += 1
           }
         })
@@ -118,8 +115,54 @@ export class ReportsComponent implements OnInit {
       })
   }
 
-  selectClient(number) {
-    this.selectedClient = number;
+  deleteReport(reportname, e) {
+    e.stopPropagation()
+    console.log(reportname)
+    axios.delete(`${this.apiurl}/reports/${this.s.username}/${reportname}`, {
+      auth: { username: this.s.username, password: this.s.password }
+    })
+      .then(res => {
+        this.reportnames.splice(this.reportnames.indexOf(reportname), 1)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  }
+
+  perform(task) {
+    if ( task === 'ping' ) {
+      this.taskPending = true
+      this.done = []
+      axios.post(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`,
+        { task: task},
+        { auth: { username: this.s.username, password: this.s.password } }
+      )
+        .then(res => {
+          setInterval( () => {
+            axios.get(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`, {
+              auth: { username: this.s.username, password: this.s.password }
+            })
+              .then(res2 => {
+                console.log(res2)
+                for (var key in res2.data.result) {
+                  if (res2.data.result[key] === true) {
+                    this.done.push(key)
+                  }
+                }
+              })
+              .catch(err2 => {
+                console.error(err2)
+              })
+          }, 5000)
+          this.taskPending = false
+        })
+        .catch(err => {
+          console.error(err)
+          this.taskPending = false
+        })
+    } else {
+      console.log(task)
+    }
   }
 
 }
