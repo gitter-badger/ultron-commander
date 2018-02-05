@@ -53,7 +53,7 @@
             <button (click)="perform('ssh')" class="btn btn-sm btn-block btn-default">SSH</button>
             <button (click)="perform('shell')" class="btn btn-sm btn-block btn-default">SHELL</button>
           </div>
-          <div *ngIf="taskPending" class="col-md-2 col-sm-3">{{done.length}}/{{clients.length}}</div>
+          <div *ngIf="taskFinished >= 0" class="col-md-2 col-sm-3">{{taskFinished}}/{{clients.length}}</div>
         </div>
       </div>
     </div>

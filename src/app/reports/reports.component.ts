@@ -30,8 +30,8 @@ export class ReportsComponent implements OnInit {
   private router: Router
   private allClients: any
   private selectedReport: string
-  private done: any
-  private taskPending: boolean = false
+  private taskFinished: number = -1
+  private refreshId: any
 
   constructor() {
     this.s = JSON.parse(localStorage.getItem('session'))
@@ -129,36 +129,41 @@ export class ReportsComponent implements OnInit {
       })
   }
 
+  finished(self) {
+    axios.get(`${self.apiurl}/task/${self.s.username}/${self.selectedReport}`, {
+      auth: { username: self.s.username, password: self.s.password }
+    })
+      .then(res => {
+        console.log(res)
+        self.selectReport(self.selectedReport)
+        self.taskFinished = Object.values(res.data.result).reduce((k,v) => {
+          return v ? k+1 : k
+        }, 0)
+        if (self.taskFinished === Object.keys(res.data.result).length) {
+          self.taskFinished = -1
+          clearInterval(self.refreshId);
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        self.taskFinished = -1
+        clearInterval(self.refreshId);
+      })
+  }
+
   perform(task) {
     if ( task === 'ping' ) {
-      this.taskPending = true
-      this.done = []
       axios.post(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`,
         { task: task},
         { auth: { username: this.s.username, password: this.s.password } }
       )
         .then(res => {
-          setInterval( () => {
-            axios.get(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`, {
-              auth: { username: this.s.username, password: this.s.password }
-            })
-              .then(res2 => {
-                console.log(res2)
-                for (var key in res2.data.result) {
-                  if (res2.data.result[key] === true) {
-                    this.done.push(key)
-                  }
-                }
-              })
-              .catch(err2 => {
-                console.error(err2)
-              })
-          }, 5000)
-          this.taskPending = false
+          console.log(res)
+          this.refreshId = setInterval( () => {this.finished(this)}, 5000 )
         })
         .catch(err => {
           console.error(err)
-          this.taskPending = false
+          this.taskFinished = -1
         })
     } else {
       console.log(task)
