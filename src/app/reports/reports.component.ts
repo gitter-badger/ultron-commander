@@ -137,7 +137,6 @@ export class ReportsComponent implements OnInit {
   finished(self) {
     axios.get(`${self.apiurl}/task/${self.s.username}/${self.selectedReport}`, {
       auth: { username: self.s.username, password: self.s.password },
-      params: { 'clientnames': self.filteredClients().map(x => x.clientname).join(',') }
     })
       .then(res => {
         self.selectReport(self.selectedReport)
