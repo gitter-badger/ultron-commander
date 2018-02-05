@@ -23,7 +23,7 @@
           <div class="col-md-2 col-sm-3" >
             <p>Ping status</p>
             <div style="display: block">
-              <canvas mdbChart 
+              <canvas mdbChart
                 [chartType]="chartType"
                 [data]="chartDataPing"
                 [labels]="chartLabelsPing"
@@ -37,7 +37,7 @@
           <div class="col-md-2 col-sm-3" >
             <p>SSH status</p>
             <div style="display: block">
-              <canvas mdbChart 
+              <canvas mdbChart
                 [chartType]="chartType"
                 [data]="chartDataSSH"
                 [labels]="chartLabelsSSH"
@@ -53,13 +53,36 @@
             <button (click)="perform('ssh')" class="btn btn-sm btn-block btn-default">SSH</button>
             <button (click)="perform('shell')" class="btn btn-sm btn-block btn-default">SHELL</button>
           </div>
-          <div *ngIf="taskFinished >= 0" class="col-md-2 col-sm-3">{{taskFinished}}/{{clients.length}}</div>
+          <div class="col-md-6 col-sm-3">
+            <div class="row" *ngIf="taskFinished >= 0">
+              <div class="col-8">
+                <button disabled class="btn btn-block btn-sm btn-info">
+                  <i class="fa fa-spinner fa-spin"></i>
+                  Executing... {{taskFinished}}/{{filteredClients().length}}
+                </button>
+              </div>
+              <div class="col-4">
+                <button (click)="cancel($event)" class="btn btn-sm btn-block btn-danger">
+                  <i class="fa fa-close"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     <br />
     <div class="card">
       <div class="card-body">
+        <div class="card-title">
+          <span *ngIf="clientsFilter !== undefined" >
+            <strong>Filter applied </strong>
+            <button (click)="removeFilters()" class="btn btn-danger btn-sm">
+              <i class="fa fa-close"></i>
+            </button>
+            <hr />
+          </span>
+        </div>
         <table class="table table-stripped">
           <thead>
             <tr>
@@ -70,9 +93,12 @@
               <th>SSH accessible</th>
             </tr>
           </thead>
-          <tbody *ngFor="let client of clients">
+          <tbody *ngFor="let client of filteredClients()">
             <tr>
-              <th>{{client.clientname}}</th>
+              <th>
+                <i *ngIf="client.task ? client.task.finished === false : false" class="fa fa-spinner fa-spin"></i>
+                {{client.clientname}}
+              </th>
               <td>{{client.dns ? client.dns.ip : 'n/a'}}</td>
               <td>{{client.dns ? client.dns.fqdn : 'n/a'}}</td>
               <td>{{client.state.online}}</td>

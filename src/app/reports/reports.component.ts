@@ -28,8 +28,8 @@ export class ReportsComponent implements OnInit {
   private s: any
   private apiurl: string
   private router: Router
-  private allClients: any
   private selectedReport: string
+  private clientsFilter: any = undefined
   private taskFinished: number = -1
   private refreshId: any
 
@@ -51,34 +51,39 @@ export class ReportsComponent implements OnInit {
       })
   }
 
-  pingChartClicked(e) {
-    let index = e.active[0]._index
-    let maps = [true, false, undefined]
+  filteredClients() {
+    if (this.clientsFilter === undefined) {
+      return this.clients
+    }
     var filtered = []
-    this.allClients.forEach(client => {
-      if (client.state.online === maps[index]) {
+    this.clients.forEach(client => {
+      if (this.clientsFilter(client)) {
         filtered.push(client)
       }
     });
-    this.clients = filtered
+    return filtered
+  }
+
+  removeFilters() {
+    this.clientsFilter = undefined
+  }
+
+  pingChartClicked(e) {
+    let index = e.active[0]._index
+    let maps = [true, false, undefined]
+    this.clientsFilter = client => client.state.online === maps[index]
   }
 
   sshChartClicked(e) {
     let index = e.active[0]._index
     let maps = [true, false, undefined]
-    var filtered = []
-    this.allClients.forEach(client => {
-      if (client.state.ssh_accessible === maps[index]) {
-        filtered.push(client)
-      }
-    });
-    this.clients = filtered
+    this.clientsFilter = client => client.state.ssh_accessible === maps[index]
   }
 
   keys(obj) {
     return Object.keys(obj)
   }
-  
+
   values(obj) {
     return Object.values(obj)
   }
@@ -89,7 +94,7 @@ export class ReportsComponent implements OnInit {
     })
       .then(res => {
         this.selectedReport = reportname
-        this.clients = this.allClients = res.data.results
+        this.clients = res.data.results
         this.chartDataPing = [0, 0, 0]
         this.chartDataSSH = [0, 0, 0]
         this.clients.map(client => {
@@ -131,15 +136,16 @@ export class ReportsComponent implements OnInit {
 
   finished(self) {
     axios.get(`${self.apiurl}/task/${self.s.username}/${self.selectedReport}`, {
-      auth: { username: self.s.username, password: self.s.password }
+      auth: { username: self.s.username, password: self.s.password },
+      params: { 'clientnames': self.filteredClients().map(x => x.clientname).join(',') }
     })
       .then(res => {
-        console.log(res)
         self.selectReport(self.selectedReport)
         self.taskFinished = Object.values(res.data.result).reduce((k,v) => {
           return v ? k+1 : k
         }, 0)
-        if (self.taskFinished === Object.keys(res.data.result).length) {
+        console.log(self.taskFinished, Object.keys(self.filteredClients()).length)
+        if (self.taskFinished == Object.keys(res.data.result).length) {
           self.taskFinished = -1
           clearInterval(self.refreshId);
         }
@@ -153,12 +159,12 @@ export class ReportsComponent implements OnInit {
 
   perform(task) {
     if ( task === 'ping' ) {
+      this.taskFinished = 0
       axios.post(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`,
-        { task: task},
+        { task, clientnames: this.filteredClients().map(x => x.clientname).join(',') },
         { auth: { username: this.s.username, password: this.s.password } }
       )
         .then(res => {
-          console.log(res)
           this.refreshId = setInterval( () => {this.finished(this)}, 5000 )
         })
         .catch(err => {
@@ -168,6 +174,20 @@ export class ReportsComponent implements OnInit {
     } else {
       console.log(task)
     }
+  }
+
+  cancel() {
+    axios.delete(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`, {
+      auth: { username: this.s.username, password: this.s.password }
+    })
+      .then(res => {
+        clearInterval(this.refreshId);
+        this.taskFinished = -1
+        this.selectReport(this.selectedReport)
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
 
 }
