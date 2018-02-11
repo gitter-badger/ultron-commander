@@ -22,7 +22,6 @@
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
     "angular-bootstrap-md": "^5.1.2",
-    "axios": "^0.17.1",
     "bootstrap": "^4.0.0",
     "bootswatch": "^4.0.0",
     "chart.js": "^2.5.0",

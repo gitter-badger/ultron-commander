@@ -26,9 +26,11 @@
           </div>
 
           <div class="text-center">
-            <button class="btn btn-block btn-default waves-light" mdbRippleRadius>Connect</button>
+            <button class="btn btn-block btn-default waves-light" mdbRippleRadius>
+              {{this.pending ? 'Connecting...' : 'Connect'}}
+            </button>
           </div>
-          
+
           <p>&nbsp;</p>
           <p class="text-center text-danger">{{error}}</p>
 

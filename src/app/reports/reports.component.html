@@ -20,6 +20,39 @@
     <div class="card">
       <div class="card-body">
         <div class="row">
+          <div class="col-md-2 col-sm-3">
+            <button (click)="perform('ping')" class="btn btn-sm btn-block btn-default">PING</button>
+            <button (click)="perform('ssh')" class="btn btn-sm btn-block btn-default">SSH</button>
+            <button (click)="perform('shell')" class="btn btn-sm btn-block btn-default">SHELL</button>
+          </div>
+          <div class="col-md-4 col-sm-4">
+            <div class="md-form">
+              <textarea [(ngModel)]="data" name="data" class="md-textarea text-dark" mdbActive></textarea>
+              <label for="data">Data (JSON)</label>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-5">
+            <div class="row" *ngIf="taskFinished >= 0">
+              <div class="col-8">
+                <button disabled class="btn btn-block btn-sm btn-info">
+                  <i class="fa fa-spinner fa-spin"></i>
+                  Executing... {{taskFinished}}/{{filteredClients().length}}
+                </button>
+              </div>
+              <div class="col-4">
+                <button (click)="cancel($event)" class="btn btn-sm btn-block btn-danger">
+                  <i class="fa fa-close"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
           <div class="col-md-2 col-sm-3" >
             <p>Ping status</p>
             <div style="display: block">
@@ -48,26 +81,6 @@
               </canvas>
             </div>
           </div>
-          <div class="col-md-2 col-sm-3">
-            <button (click)="perform('ping')" class="btn btn-sm btn-block btn-default">PING</button>
-            <button (click)="perform('ssh')" class="btn btn-sm btn-block btn-default">SSH</button>
-            <button (click)="perform('shell')" class="btn btn-sm btn-block btn-default">SHELL</button>
-          </div>
-          <div class="col-md-6 col-sm-3">
-            <div class="row" *ngIf="taskFinished >= 0">
-              <div class="col-8">
-                <button disabled class="btn btn-block btn-sm btn-info">
-                  <i class="fa fa-spinner fa-spin"></i>
-                  Executing... {{taskFinished}}/{{filteredClients().length}}
-                </button>
-              </div>
-              <div class="col-4">
-                <button (click)="cancel($event)" class="btn btn-sm btn-block btn-danger">
-                  <i class="fa fa-close"></i>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -86,11 +99,11 @@
         <table class="table table-stripped">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>name</th>
               <th>IP</th>
               <th>FQDN</th>
-              <th>Online</th>
-              <th>SSH accessible</th>
+              <th>published</th>
+              <th *ngFor="let k of keys(filteredClients()[0]['state'])">{{k}}</th>
             </tr>
           </thead>
           <tbody *ngFor="let client of filteredClients()">
@@ -101,8 +114,8 @@
               </th>
               <td>{{client.dns ? client.dns.ip : 'n/a'}}</td>
               <td>{{client.dns ? client.dns.fqdn : 'n/a'}}</td>
-              <td>{{client.state.online}}</td>
-              <td>{{client.state.ssh_accessible}}</td>
+              <td>{{client.published}}</td>
+              <td *ngFor="let v of values(client.state)">{{v}}</td>
             </tr>
           </tbody>
         </table>

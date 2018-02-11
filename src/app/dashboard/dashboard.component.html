@@ -15,22 +15,22 @@
           </div>
 
           <div class="md-form">
-            <textarea [(ngModel)]="clientnames" name="clientnames" class="md-textarea" mdbActive></textarea>
-            <label for="form7">Hostnames</label>
+            <textarea [(ngModel)]="clientnames" name="clientnames" class="md-textarea text-dark" mdbActive></textarea>
+            <label for="clientnames">Hostnames</label>
           </div>
 
           <div class="md-form">
-            <textarea [(ngModel)]="props" name="props" class="md-textarea" mdbActive></textarea>
-            <label>Extra properties (JSON)</label>
+            <textarea [(ngModel)]="props" name="props" class="md-textarea text-dark" mdbActive></textarea>
+            <label for="props">Extra properties (JSON)</label>
           </div>
 
           <div class="text-center">
             <button class="btn btn-default waves-light" mdbRippleRadius>Submit</button>
           </div>
-          
+
           <p>&nbsp;</p>
           <p class="text-center text-danger">{{error}}</p>
-        
+
         </form>
       </div>
     </div>

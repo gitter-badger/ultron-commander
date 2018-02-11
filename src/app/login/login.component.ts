@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import axios from 'axios'
 import { Router } from '@angular/router'
+import { ApiService } from '../api.service'
 
 @Component({
   selector: 'app-login',
@@ -13,8 +13,9 @@ export class LoginComponent implements OnInit {
   public password: string
   public apiurl: string
   public error: string
+  public pending: boolean = false
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private api: ApiService) { }
 
   ngOnInit() {
     localStorage.removeItem('session')
@@ -24,23 +25,21 @@ export class LoginComponent implements OnInit {
   login(e) {
     e.preventDefault()
     this.error = ''
-    axios.get(`${this.apiurl}/token/${this.username}`, {
-      auth: {username: this.username, password: this.password}
-    })
-    .then(res => {
-      localStorage.setItem('apiurl', this.apiurl)
-      localStorage.setItem('session', JSON.stringify({
-        username: this.username,
-        password: this.password,
-        token: res.data.token
-      }))
-      this.router.navigate([''])
-    })
-    .catch(err => {
-      this.error = 'Authentication faled !'
-      console.error(err);
-      localStorage.removeItem('session')
-    })
+    this.pending = true
+    this.api.login(this.apiurl, this.username, this.password).subscribe(
+      res => {
+        localStorage.setItem('apiurl', this.apiurl)
+        localStorage.setItem('session', JSON.stringify({
+          username: this.username,
+          token: res.token
+        }))
+        this.router.navigate([''])
+      },
+      err => {
+        this.error = 'Authentication failed !'
+        this.pending = false
+      }
+    )
   }
 
 }

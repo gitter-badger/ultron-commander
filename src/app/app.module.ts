@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { FormsModule } from '@angular/forms'
+import { HttpClientModule } from '@angular/common/http'
+import { ApiService } from './api.service'
 import { AuthGuard } from './auth.guard'
 
 
@@ -23,6 +25,7 @@ import { LoginComponent } from './login/login.component';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     FormsModule,
     MDBBootstrapModule.forRoot(),
     RouterModule.forRoot([
@@ -34,12 +37,12 @@ import { LoginComponent } from './login/login.component';
       {
         path: 'dashboard',
         component: DashboardComponent,
-        canActivate: [AuthGuard] 
+        canActivate: [AuthGuard]
       },
       {
         path: 'reports',
         component: ReportsComponent,
-        canActivate: [AuthGuard] 
+        canActivate: [AuthGuard]
       },
       {
         path: 'login',
@@ -47,7 +50,7 @@ import { LoginComponent } from './login/login.component';
       }
     ])
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard, ApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
