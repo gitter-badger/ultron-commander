@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
           username: this.username,
           token: res.token
         }))
+        this.api.resetHeader()
         this.router.navigate([''])
       },
       err => {

@@ -25,12 +25,6 @@
             <button (click)="perform('ssh')" class="btn btn-sm btn-block btn-default">SSH</button>
             <button (click)="perform('shell')" class="btn btn-sm btn-block btn-default">SHELL</button>
           </div>
-          <div class="col-md-4 col-sm-4">
-            <div class="md-form">
-              <textarea [(ngModel)]="data" name="data" class="md-textarea text-dark" mdbActive></textarea>
-              <label for="data">Data (JSON)</label>
-            </div>
-          </div>
           <div class="col-md-6 col-sm-5">
             <div class="row" *ngIf="taskFinished >= 0">
               <div class="col-8">
@@ -103,7 +97,7 @@
               <th>IP</th>
               <th>FQDN</th>
               <th>published</th>
-              <th *ngFor="let k of keys(filteredClients()[0]['state'])">{{k}}</th>
+              <th *ngFor="let k of tableHeader">{{k}}</th>
             </tr>
           </thead>
           <tbody *ngFor="let client of filteredClients()">

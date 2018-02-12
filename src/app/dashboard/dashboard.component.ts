@@ -22,7 +22,6 @@ export class DashboardComponent implements OnInit {
   public error: string
 
   private s: any = JSON.parse(localStorage.getItem('session'))
-  private apiurl: string = localStorage.getItem('apiurl')
 
   constructor(private router: Router, private api: ApiService) { }
 
@@ -33,7 +32,7 @@ export class DashboardComponent implements OnInit {
     e.preventDefault()
     this.pending = true
     this.error = ''
-    this.api.post(`${this.apiurl}/reports/${this.s.username}/${this.reportname}`,
+    this.api.post(`/reports/${this.s.username}/${this.reportname}`,
     {clientnames: this.clientnames, props: this.props})
     .subscribe(res => {
       this.clients = res.results

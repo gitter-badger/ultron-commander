@@ -43,6 +43,7 @@ export class ApiService {
 
   login(apiurl, username, password): Observable<any> {
     localStorage.removeItem('session')
+    this.apiurl = apiurl
     this.httpOptions.headers = new HttpHeaders({
       'Authorization': 'Basic ' + btoa(`${username}:${password}`)
     })
@@ -50,18 +51,27 @@ export class ApiService {
                     .pipe(retry(3), catchError(this.handleError))
   }
 
+  resetHeader() {
+    let s = localStorage.getItem('session')
+    if (s) {
+      this.httpOptions.headers = new HttpHeaders({
+        'Authorization': 'Bearer '+ JSON.parse(s).token
+      })
+    }
+  }
+
   get(url): Observable<any> {
-    return this.http.get(url, this.httpOptions)
+    return this.http.get(this.apiurl+url, this.httpOptions)
                     .pipe(retry(3), catchError(this.handleError))
   }
 
   post(url, data={}): Observable<any> {
-    return this.http.post(url, data, this.httpOptions)
+    return this.http.post(this.apiurl+url, data, this.httpOptions)
                     .pipe(retry(3), catchError(this.handleError))
   }
 
   delete(url): Observable<any> {
-    return this.http.delete(url, this.httpOptions)
+    return this.http.delete(this.apiurl+url, this.httpOptions)
                     .pipe(retry(3), catchError(this.handleError))
   }
 }

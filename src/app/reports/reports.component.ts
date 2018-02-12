@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { ApiService } from '../api.service'
 import { Router } from '@angular/router'
+import * as _ from "lodash";
 
 @Component({
   selector: 'app-reports',
@@ -11,6 +12,7 @@ export class ReportsComponent implements OnInit {
 
   public reportnames: any = []
   public clients: any = []
+  public tableHeader: any = []
 
   public chartType: string = 'pie';
   public chartDataPing: Array<any> = [0, 0, 0];
@@ -26,7 +28,6 @@ export class ReportsComponent implements OnInit {
   };
 
   private s: any
-  private apiurl: string
   private router: Router
   private selectedReport: string
   private clientsFilter: any = undefined
@@ -35,12 +36,11 @@ export class ReportsComponent implements OnInit {
 
   constructor(private api: ApiService) {
     this.s = JSON.parse(localStorage.getItem('session'))
-    this.apiurl = localStorage.getItem('apiurl')
    }
 
   ngOnInit() {
 
-    this.api.get(`${this.apiurl}/admin/${this.s.username}`)
+    this.api.get(`/admin/${this.s.username}`)
     .subscribe(res => {
       this.reportnames = res.result.reportnames
     })
@@ -84,13 +84,15 @@ export class ReportsComponent implements OnInit {
   }
 
   selectReport(reportname) {
-    this.api.get(`${this.apiurl}/reports/${this.s.username}/${reportname}`)
+    this.api.get(`/reports/${this.s.username}/${reportname}`)
     .subscribe(res => {
       this.selectedReport = reportname
+      this.tableHeader = []
       this.clients = res.results
       this.chartDataPing = [0, 0, 0]
       this.chartDataSSH = [0, 0, 0]
       this.clients.map(client => {
+        this.tableHeader = _.union(this.tableHeader, Object.keys(client.state))
         if (client.state.online === true) {
           this.chartDataPing[0] += 1
         } else if (client.state.online === false) {
@@ -113,14 +115,14 @@ export class ReportsComponent implements OnInit {
   deleteReport(reportname, e) {
     e.stopPropagation()
     console.log(reportname)
-    this.api.delete(`${this.apiurl}/reports/${this.s.username}/${reportname}`)
+    this.api.delete(`/reports/${this.s.username}/${reportname}`)
     .subscribe(res => {
       this.reportnames.splice(this.reportnames.indexOf(reportname), 1)
     })
   }
 
   finished(self) {
-    this.api.get(`${self.apiurl}/task/${self.s.username}/${self.selectedReport}`)
+    this.api.get(`/task/${self.s.username}/${self.selectedReport}`)
     .subscribe(res => {
       self.selectReport(self.selectedReport)
       self.taskFinished = Object.values(res.result).reduce((k,v) => {
@@ -134,37 +136,27 @@ export class ReportsComponent implements OnInit {
     })
   }
 
-  // perform(task) {
-  //   if ( task === 'ping' ) {
-  //     this.taskFinished = 0
-  //     axios.post(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`,
-  //       { task, clientnames: this.filteredClients().map(x => x.clientname).join(',') },
-  //       { auth: { username: this.s.username, password: this.s.password } }
-  //     )
-  //       .then(res => {
-  //         this.refreshId = setInterval( () => {this.finished(this)}, 5000 )
-  //       })
-  //       .catch(err => {
-  //         console.error(err)
-  //         this.taskFinished = -1
-  //       })
-  //   } else {
-  //     console.log(task)
-  //   }
-  // }
-  //
-  // cancel() {
-  //   axios.delete(`${this.apiurl}/task/${this.s.username}/${this.selectedReport}`, {
-  //     auth: { username: this.s.username, password: this.s.password }
-  //   })
-  //     .then(res => {
-  //       clearInterval(this.refreshId);
-  //       this.taskFinished = -1
-  //       this.selectReport(this.selectedReport)
-  //     })
-  //     .catch(err => {
-  //       console.error(err)
-  //     })
-  // }
+  perform(task) {
+    if ( task === 'ping' ) {
+      this.taskFinished = 0
+      this.api.post(`/task/${this.s.username}/${this.selectedReport}`,
+        { task, clientnames: this.filteredClients().map(x => x.clientname).join(',') },
+      )
+      .subscribe(res => {
+        this.refreshId = setInterval( () => {this.finished(this)}, 5000 )
+      })
+    } else if ( task === 'ssh' ) {
+      console.log(task)
+    }
+  }
+
+  cancel() {
+    this.api.delete(`/task/${this.s.username}/${this.selectedReport}`)
+    .subscribe(res => {
+      clearInterval(this.refreshId);
+      this.taskFinished = -1
+      this.selectReport(this.selectedReport)
+    })
+  }
 
 }

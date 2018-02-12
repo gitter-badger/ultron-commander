@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "@types/lodash": "^4.14.102",
     "angular-bootstrap-md": "^5.1.2",
     "bootstrap": "^4.0.0",
     "bootswatch": "^4.0.0",
