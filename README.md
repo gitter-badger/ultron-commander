@@ -1,5 +1,7 @@
 # Ultron Commander
 
+[![Join the chat at https://gitter.im/rapidstack/ultron-commander](https://badges.gitter.im/rapidstack/ultron-commander.svg)](https://gitter.im/rapidstack/ultron-commander?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.7.
 
 ## Development server
